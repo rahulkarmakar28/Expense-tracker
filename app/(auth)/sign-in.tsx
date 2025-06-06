@@ -56,11 +56,11 @@ export default function Page() {
     >
       <View style={styles.container}>
         <Image
-          source={require('@/assets/images/illustrations/revenue-i4.png')}
+          source={require('@/assets/images/revenue-i4.png')}
           style={styles.illustration}
         />
         <Text style={styles.title}>Welcome Back</Text>
-        {error ?? (
+        {error && (
           <View style={styles.errorBox}>
             <Ionicons name="alert-circle" size={20} color={COLORS.expense} />
             <Text style={styles.errorText}>{error}</Text>

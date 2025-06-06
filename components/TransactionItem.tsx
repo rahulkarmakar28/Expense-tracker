@@ -18,10 +18,23 @@ const CATEGORY_ICONS: Record<string, IoniconName> = {
     Miscellaneous: 'ellipsis-horizontal',
     Education: 'school',
 };
-export const TransactionItem = ({ item, onDelete }: { item: { id: string; amount: string; category: string }, onDelete: () => void }) => {
-    const isIncome = parseFloat(item.amount) > 0;
-    const iconName: IoniconName = CATEGORY_ICONS[item.category] || 'pricetag-outline';
+export interface Transaction {
+    id: string;
+    title: string;
+    amount: string;
+    type:string
+    category: string;
+    createdAt: string;
+}
+interface TransactionItemProps {
+    item: Transaction;
+    onDelete: (id: Number) => void;
+}
 
+export const TransactionItem = ({ item, onDelete }: TransactionItemProps) => {
+    const isIncome = item.type==='Income';
+    const iconName: IoniconName = CATEGORY_ICONS[item.category] || 'pricetag-outline';
+// console.log(item)
     return (
         <View style={styles.transactionCard} key={item.id}>
             <TouchableOpacity style={styles.transactionContent}>
@@ -36,10 +49,10 @@ export const TransactionItem = ({ item, onDelete }: { item: { id: string; amount
                     <Text style={[styles.transactionAmount, { color: isIncome ? COLORS.income : COLORS.expense }]}>
                         {isIncome ? '+' : '-'}₹{Math.abs(parseFloat(item.amount)).toFixed(2)}
                     </Text>
-                    <Text style={styles.transactionDate}>{formatDate(item.created_at)}</Text>
+                    <Text style={styles.transactionDate}>{formatDate(item.createdAt)}</Text>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.deleteButton} onPress={() => onDelete(item?.id)}>
+            <TouchableOpacity style={styles.deleteButton} onPress={() => onDelete(Number(item.id))}>
                 <Ionicons name="trash-outline" size={20} color={COLORS.expense} />
             </TouchableOpacity>
         </View>

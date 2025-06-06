@@ -78,7 +78,7 @@ export default function SignUpScreen() {
     return (
       <View style={styles.verificationContainer}>
         <Text style={styles.verificationTitle}>Verify your email</Text>
-        {error ?? (
+        {error && (
           <View style={styles.errorBox}>
             <Ionicons name="alert-circle" size={20} color={COLORS.expense} />
             <Text style={styles.errorText}>{error}</Text>
@@ -113,7 +113,7 @@ export default function SignUpScreen() {
       <View style={styles.container}>
         <Image source={require("@/assets/images/revenue-i2.png")} style={styles.illustration} />
         <Text style={styles.title}>Create Account</Text>
-        {error ?? (
+        {error && (
           <View style={styles.errorBox}>
             <Ionicons name="alert-circle" size={20} color={COLORS.expense} />
             <Text style={styles.errorText}>{error}</Text>
@@ -129,7 +129,6 @@ export default function SignUpScreen() {
           placeholder="Enter email"
           placeholderTextColor="#9A8478"
           onChangeText={(email) => setEmailAddress(email)}
-          
         />
         <TextInput
           style={[styles.input, error && styles.errorInput]}

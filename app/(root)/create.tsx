@@ -9,11 +9,14 @@ import { styles } from "@/assets/styles/create.styles"
 import { Ionicons } from "@expo/vector-icons"
 import { COLORS } from "@/constants/colors"
 import type { IconProps } from "@expo/vector-icons/build/createIconSet";
+import { useTransaction } from "@/hooks/useTransaction"
 
 
+
+// Removed invalid IoniconsGlyphs import
 
 interface category {
-    id: string, name: string, icon: IconProps<string>["name"]
+    id: string, name: string, icon: string
 }
 
 const CATEGORIES: category[] = [
@@ -30,7 +33,7 @@ const CATEGORIES: category[] = [
 const create = () => {
     const router = useRouter()
     const { user } = useUser()
-
+    const { loadData } = useTransaction(user?.id!)
     const [title, setTitle] = useState<string>("")
     const [amount, setAmount] = useState<string>("")
     const [selectedCategory, setSelectedCategory] = useState<string>("")
@@ -45,6 +48,7 @@ const create = () => {
         }
         if (!selectedCategory) return Alert.alert("Error", "Please select a Category")
         try {
+
             setIsLoading(true)
             const formattedAmount = Math.abs(parseFloat(amount))
             const response = await fetch(`${TRANSACTION_API.createTransaction}`,
@@ -62,11 +66,13 @@ const create = () => {
                     })
                 })
             if (!response.ok) {
-                const errorData = await response.json()
-                throw new Error(errorData.error || "Failed to create transaction")
+                const res = await response.json()
+                throw new Error(res.error || "Failed to create transaction")
             }
             Alert.alert("Success", "Transaction created successfully")
+
             router.back()
+            loadData()
         } catch (error: Object | any) {
             Alert.alert("Error", error.message || "Failed to create Transaction")
             console.log("Error in creating Transaction", error)
@@ -94,23 +100,39 @@ const create = () => {
 
             <View style={styles.card}>
                 <View style={styles.typeSelector}>
-                    {/* expense  */}
+                    {/* Expense */}
                     <TouchableOpacity
                         style={[styles.typeButton, isExpense && styles.typeButtonActive]}
                         onPress={() => setIsExpense(true)}
                     >
-                        <Ionicons name="arrow-down-circle" size={22} color={isExpense ? COLORS.white : COLORS.expense} style={styles.typeIcon} />
-                        <Text style={[styles.typeButtonText, isExpense && styles.typeButtonTextActive]}>Expense</Text>
+                        <Ionicons
+                            name="arrow-down-circle"
+                            size={22}
+                            color={isExpense ? COLORS.white : COLORS.expense}
+                            style={styles.typeIcon}
+                        />
+                        <Text style={[styles.typeButtonText, isExpense && styles.typeButtonTextActive]}>
+                            Expense
+                        </Text>
                     </TouchableOpacity>
-                    {/* income */}
+
+                    {/* Income */}
                     <TouchableOpacity
-                        style={[styles.typeButton, isExpense && styles.typeButtonActive]}
+                        style={[styles.typeButton, !isExpense && styles.typeButtonActive]}
                         onPress={() => setIsExpense(false)}
                     >
-                        <Ionicons name="arrow-up-circle" size={22} color={isExpense ? COLORS.white : COLORS.expense} style={styles.typeIcon} />
-                        <Text style={[styles.typeButtonText, !isExpense && styles.typeButtonTextActive]}>Income</Text>
+                        <Ionicons
+                            name="arrow-up-circle"
+                            size={22}
+                            color={!isExpense ? COLORS.white : COLORS.expense}
+                            style={styles.typeIcon}
+                        />
+                        <Text style={[styles.typeButtonText, !isExpense && styles.typeButtonTextActive]}>
+                            Income
+                        </Text>
                     </TouchableOpacity>
                 </View>
+
 
                 {/* amount */}
                 <View style={styles.amountContainer}>
@@ -163,7 +185,7 @@ const create = () => {
                                 style={styles.categoryIcon}
                             />
                             <Text
-                            style={[styles.categoryButtonText, selectedCategory===category.name && styles.categoryButtonTextActive]}
+                                style={[styles.categoryButtonText, selectedCategory === category.name && styles.categoryButtonTextActive]}
                             >{category.name}</Text>
                         </TouchableOpacity>
                     ))}
@@ -172,8 +194,8 @@ const create = () => {
 
             {isLoading && (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={COLORS.primary}/>
-                    </View>
+                    <ActivityIndicator size="large" color={COLORS.primary} />
+                </View>
             )}
         </View>
     )

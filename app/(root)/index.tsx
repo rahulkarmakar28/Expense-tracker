@@ -25,11 +25,8 @@ export default function Page() {
   useEffect(() => {
     loadData()
   }, [loadData])
-  console.log('Transactions:', transactions)
-  console.log('Summary:', summary)
-  console.log('Loading:', loading)
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: Number) => {
     Alert.alert("Delete Transaction", "Are you sure you want to delete this transaction?", [
       { text:"Cancel", style: "cancel" },
       { text: "Delete", style: "destructive", onPress: () => deleteTransaction(id) }
